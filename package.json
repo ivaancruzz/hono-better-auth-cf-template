@@ -1,0 +1,19 @@
+{
+    "name": "cloudflare-serverless-api",
+    "private": true,
+    "packageManager": "pnpm@9.1.0",
+    "scripts": {
+        "dev": "pnpm --filter api dev",
+        "build": "pnpm --filter api build",
+        "deploy": "pnpm --filter api deploy",
+        "cf-typegen": "pnpm --filter api cf-typegen",
+        "auth:generate": "pnpm --filter api auth:generate",
+        "auth:format": "pnpm --filter api auth:format",
+        "auth:update": "pnpm --filter api auth:update",
+        "db:generate": "pnpm --filter api db:generate",
+        "db:migrate:dev": "pnpm --filter api db:migrate:dev",
+        "db:migrate:prod": "pnpm --filter api db:migrate:prod",
+        "db:studio:dev": "pnpm --filter api db:studio:dev",
+        "db:studio:prod": "pnpm --filter api db:studio:prod"
+    }
+}

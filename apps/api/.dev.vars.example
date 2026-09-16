@@ -1,0 +1,5 @@
+BETTER_AUTH_SECRET=replace-with-openssl-rand-base64-32
+BETTER_AUTH_URL=http://localhost:8787
+RESEND_API_KEY=re_xxx
+ENVIRONMENT=development
+LOG_LEVEL=debug

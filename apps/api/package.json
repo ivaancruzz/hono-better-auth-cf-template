@@ -1,0 +1,40 @@
+{
+    "name": "api",
+    "version": "0.0.0",
+    "private": true,
+    "scripts": {
+        "dev": "wrangler dev",
+        "build": "tsc --noEmit",
+        "deploy": "wrangler deploy --minify",
+        "cf-typegen": "wrangler types --env-interface CloudflareBindings",
+        "auth:generate": "better-auth generate --config src/auth/index.ts --output src/db/auth.schema.ts -y",
+        "auth:format": "prettier --write src/db/auth.schema.ts",
+        "auth:update": "pnpm auth:generate && pnpm auth:format",
+        "db:generate": "drizzle-kit generate",
+        "db:migrate:dev": "wrangler d1 migrations apply DATABASE --local",
+        "db:migrate:prod": "wrangler d1 migrations apply DATABASE --remote",
+        "db:studio:dev": "drizzle-kit studio",
+        "db:studio:prod": "cross-env NODE_ENV=production drizzle-kit studio"
+    },
+    "dependencies": {
+        "@better-auth/drizzle-adapter": "^1.0.0",
+        "@hono/zod-validator": "^0.4.0",
+        "better-auth": "^1.5.0",
+        "better-auth-cloudflare": "latest",
+        "drizzle-orm": "^0.45.0",
+        "hono": "^4.7.11",
+        "resend": "^4.0.0",
+        "zod": "^3.24.0"
+    },
+    "devDependencies": {
+        "@better-auth/cli": "^1.4.22",
+        "@cloudflare/workers-types": "^4.20250101.0",
+        "@types/node": "^22.10.0",
+        "better-sqlite3": "^11.7.0",
+        "cross-env": "^7.0.3",
+        "drizzle-kit": "^0.31.1",
+        "prettier": "^3.4.0",
+        "typescript": "^5.7.0",
+        "wrangler": "^3.99.0"
+    }
+}
