@@ -30,47 +30,6 @@ function createAuth(env?: CloudflareBindings, cf?: IncomingRequestCfProperties, 
                       }
                     : undefined,
                 kv: env?.KV,
-                // R2 configuration for file storage (R2_BUCKET binding from wrangler.toml).
-                // This block stays unconditional on purpose: it defines the SHAPE of the
-                // schema (adds a `userFiles` table), which must be the same whether this
-                // runs at request-time (real env) or via the CLI schema generator (no env)
-                // — only the actual `bucket` value differs between those two cases. If you
-                // conditioned this on `env?.R2_BUCKET`, the CLI-generated schema would be
-                // missing `userFiles` and every auth request would fail at runtime with a
-                // "Drizzle schema mismatch" error. Remove this whole block (not just the
-                // condition) if your project doesn't need file uploads.
-                r2: {
-                    bucket: env?.R2_BUCKET as any,
-                    maxFileSize: 2 * 1024 * 1024, // 2MB
-                    allowedTypes: [".jpg", ".jpeg", ".png", ".gif"],
-                    additionalFields: {
-                        isPublic: { type: "boolean", required: false },
-                    },
-                    hooks: {
-                        upload: {
-                            before: async (file, ctx) => {
-                                // Only allow authenticated users to upload files
-                                if (ctx.session === null) {
-                                    return null; // Blocks upload
-                                }
-                                // Allow upload
-                            },
-                            after: async (file, ctx) => {
-                                // Track your analytics (for example)
-                                console.log("File uploaded:", file);
-                            },
-                        },
-                        download: {
-                            before: async (file, ctx) => {
-                                // Only allow the owner to access private files (public by default)
-                                if (file.isPublic === false && file.userId !== ctx.session?.user.id) {
-                                    return null; // Blocks download
-                                }
-                                // Allow download
-                            },
-                        },
-                    },
-                },
             },
             {
                 emailAndPassword: {
@@ -107,6 +66,16 @@ function createAuth(env?: CloudflareBindings, cf?: IncomingRequestCfProperties, 
                         // the rate limiter can't resolve an IP and warns on every request. In
                         // production it's present (autoDetectIpAddress adds it above).
                         disableIpTracking: env?.ENVIRONMENT !== "production",
+                    },
+                    database: {
+                        // `export const auth = createAuth()` below runs with no `env` on every
+                        // cold start (it exists for the CLI schema generator), wired to a fake
+                        // empty D1Database. Better Auth's schema-diff check runs against that
+                        // fake DB too and logs a "Drizzle schema mismatch" error claiming every
+                        // table is missing — harmless noise, since the real per-request instance
+                        // (created with the actual `env`/DB further down) never hits this. Only
+                        // validate schema when we have a real DB to validate against.
+                        validateSchema: !!env,
                     },
                 },
                 trustedOrigins: [

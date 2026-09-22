@@ -95,20 +95,6 @@ export const verifications = sqliteTable(
     table => [index("verifications_identifier_idx").on(table.identifier)]
 );
 
-export const userFiles = sqliteTable("user_files", {
-    id: text("id").primaryKey(),
-    userId: text("user_id")
-        .notNull()
-        .references(() => users.id, { onDelete: "cascade" }),
-    filename: text("filename").notNull(),
-    originalName: text("original_name").notNull(),
-    contentType: text("content_type").notNull(),
-    size: integer("size").notNull(),
-    r2Key: text("r2_key").notNull(),
-    uploadedAt: integer("uploaded_at", { mode: "timestamp_ms" }).notNull(),
-    isPublic: integer("is_public", { mode: "boolean" }),
-});
-
 export const organizations = sqliteTable(
     "organizations",
     {
@@ -168,7 +154,6 @@ export const invitations = sqliteTable(
 export const usersRelations = relations(users, ({ many }) => ({
     sessions: many(sessions),
     accounts: many(accounts),
-    userFiles: many(userFiles),
     members: many(members),
     invitations: many(invitations),
 }));
@@ -183,13 +168,6 @@ export const sessionsRelations = relations(sessions, ({ one }) => ({
 export const accountsRelations = relations(accounts, ({ one }) => ({
     users: one(users, {
         fields: [accounts.userId],
-        references: [users.id],
-    }),
-}));
-
-export const userFilesRelations = relations(userFiles, ({ one }) => ({
-    users: one(users, {
-        fields: [userFiles.userId],
         references: [users.id],
     }),
 }));

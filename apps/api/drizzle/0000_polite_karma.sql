@@ -77,19 +77,6 @@ CREATE TABLE `sessions` (
 --> statement-breakpoint
 CREATE UNIQUE INDEX `sessions_token_unique` ON `sessions` (`token`);--> statement-breakpoint
 CREATE INDEX `sessions_userId_idx` ON `sessions` (`user_id`);--> statement-breakpoint
-CREATE TABLE `user_files` (
-	`id` text PRIMARY KEY NOT NULL,
-	`user_id` text NOT NULL,
-	`filename` text NOT NULL,
-	`original_name` text NOT NULL,
-	`content_type` text NOT NULL,
-	`size` integer NOT NULL,
-	`r2_key` text NOT NULL,
-	`uploaded_at` integer NOT NULL,
-	`is_public` integer,
-	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE cascade
-);
---> statement-breakpoint
 CREATE TABLE `users` (
 	`id` text PRIMARY KEY NOT NULL,
 	`name` text NOT NULL,
